@@ -1,5 +1,6 @@
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 function Header() {
   return (
@@ -37,7 +38,10 @@ function Header() {
               <a href="#" className="text-opacity-60 text-white hover:text-opacity-100 transition">Updates</a>
               <a href="#" className="text-opacity-60 text-white hover:text-opacity-100 transition">Help</a>
               <a href="#" className="text-opacity-60 text-white hover:text-opacity-100 transition">Customers</a>
+              <Link href={"login"}>
               <button className="bg-white py-2 px-4 rounded-lg text-black">Get for free</button>
+              
+              </Link>
             </nav>
 
           </div>

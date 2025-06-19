@@ -6,6 +6,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { db, auth } from "@/app/Firebase/Firebase";
 import VerificationPopup from "./_components/VerificationPopup";
+import Sidebar from "./_components/Slidebar";
 export default function DashboardLayout({ children }) {
   const [loading, setLoading] = useState(true);
   const [isVerified, setIsVerified] = useState(false);
@@ -31,7 +32,18 @@ export default function DashboardLayout({ children }) {
   return (
     <div>
       {isVerified ? (
-        <main>{children}</main>
+        <main>
+              <div className="flex h-screen w-full">
+      <div className="">
+        <Sidebar />
+      </div>
+      <div className="w-full">{children}</div>
+                
+      </div>
+
+     
+          
+</main>
       ) : (
         <VerificationPopup />
       )}

@@ -4,6 +4,7 @@ import React from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { AnimatedGradientTextDemo } from "./animatedtext";
+import Link from "next/link";
 const Hero = () => {
   return (
     <div className="bg-black px-4 md:px-10 py-10 text-white bg-[linear-gradient(to_bottom,#000,#01254b86,#002e60e9,#004f9b,#3680ce)] py-[150px] sm:py-24 relative overflow-clip">
@@ -54,14 +55,17 @@ const Hero = () => {
 
         <div className="flex justify-center">
           <p className="text-xl text-center mt-8 max-w-md">
-          Send sensitive information safely, without compromise. Our advanced encryption keeps your communication private and secure.
+            Send sensitive information safely, without compromise. Our advanced
+            encryption keeps your communication private and secure.
           </p>
         </div>
 
         <div className="flex justify-center mt-8">
-          <button className="bg-white text-black py-3 px-5 rounded-lg font-medium">
-            Get for free
-          </button>
+          <Link href={"/login"}>
+            <button className="bg-white text-black py-3 px-5 rounded-lg font-medium">
+              Get for free
+            </button>
+          </Link>
         </div>
       </div>
     </div>
