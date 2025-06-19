@@ -4,6 +4,7 @@ import { Bell, Plus, Search } from "lucide-react";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { db, auth } from "@/app/Firebase/Firebase";
+import { useRouter } from "next/navigation";
 import {
   collection,
   doc,
@@ -29,6 +30,7 @@ export default function Sidebar() {
   const [userOrgCode, setUserOrgCode] = useState("");
   const [pendingRequests, setPendingRequests] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
+  const router = useRouter();
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
@@ -119,7 +121,7 @@ export default function Sidebar() {
       unsub2();
     };
   }, [user]);
-useEffect(() => {
+  useEffect(() => {
     if (!user) return;
 
     const q1 = query(
@@ -188,7 +190,10 @@ useEffect(() => {
         snapshot.docs.map(async (doc) => {
           const data = doc.data();
           const orgSnap = await getDocs(
-            query(collection(db, "organizations"), where("uid", "==", data.from_uid))
+            query(
+              collection(db, "organizations"),
+              where("uid", "==", data.from_uid)
+            )
           );
           const orgData = orgSnap.docs[0]?.data() || {};
           return {
@@ -207,7 +212,6 @@ useEffect(() => {
       unsubPending();
     };
   }, [user]);
-
 
   const handleSecretCodeSubmit = async () => {
     setError("");
@@ -306,7 +310,10 @@ useEffect(() => {
             height={32}
             className="rounded"
           />
-          <Link href={"/dashboard/profile"} className="text-xl   text- rounded-sm font-semibold text-slate-800 dark:text-white">
+          <Link
+            href={"/dashboard/profile"}
+            className="text-xl   text- rounded-sm font-semibold text-slate-800 dark:text-white"
+          >
             Profile
           </Link>
         </div>
@@ -348,16 +355,18 @@ useEffect(() => {
       <div className="flex-1 overflow-y-auto">
         {connections.map((conn) => (
           <div
+              onClick={() => router.push("dashboard/" + conn.id)}
             key={conn.id}
             className="px-4 py-3 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer border-b dark:border-slate-700"
           >
-            <Link href={conn.id}><h4 className="text-slate-800 dark:text-white font-medium">
-              {conn.otherOrg?.name  || "Unknown"}
-            </h4>
-            <p className="text-sm text-slate-500 dark:text-slate-300 truncate">
-              {conn.status}
-            </p></Link>
             
+              <h4 className="text-slate-800 dark:text-white font-medium">
+                {conn.otherOrg?.name || "Unknown"}
+              </h4>
+              <p className="text-sm text-slate-500 dark:text-slate-300 truncate">
+                {conn.status}
+              </p>
+          
           </div>
         ))}
       </div>
