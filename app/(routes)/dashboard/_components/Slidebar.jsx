@@ -119,78 +119,94 @@ export default function Sidebar() {
       unsub2();
     };
   }, [user]);
-
 useEffect(() => {
-  if (!user) return;
+    if (!user) return;
 
-  const q = query(
-    collection(db, "connections"),
-    where("status", "==", "accepted"),
-    where("from_uid", "==", user.uid)
-  );
-
-  const q2 = query(
-    collection(db, "connections"),
-    where("status", "==", "accepted"),
-    where("to_uid", "==", user.uid)
-  );
-
-  // We'll fetch connections where user is either from_uid or to_uid
-  // Then fetch other org details for each connection
-
-  const unsub1 = onSnapshot(q, async (snapshot) => {
-    const conns = await Promise.all(
-      snapshot.docs.map(async (doc) => {
-        const data = doc.data();
-        // user is from_uid, so other user is to_uid
-        const otherUid = data.to_uid;
-        // fetch other org
-        const otherOrgSnap = await getDocs(
-          query(collection(db, "organizations"), where("uid", "==", otherUid))
-        );
-        const otherOrg = otherOrgSnap.docs[0]?.data() || {};
-        return { id: doc.id, ...data, otherOrg };
-      })
+    const q1 = query(
+      collection(db, "connections"),
+      where("from_uid", "==", user.uid),
+      where("status", "==", "accepted")
     );
-    setConnections((prev) => {
-      // Combine with existing but avoid duplicates
-      const merged = [...prev];
-      conns.forEach((c) => {
-        if (!merged.find((conn) => conn.id === c.id)) merged.push(c);
-      });
-      return merged;
-    });
-  });
 
-  const unsub2 = onSnapshot(q2, async (snapshot) => {
-    const conns = await Promise.all(
-      snapshot.docs.map(async (doc) => {
-        const data = doc.data();
-        // user is to_uid, so other user is from_uid
-        const otherUid = data.from_uid;
-        // fetch other org
-        const otherOrgSnap = await getDocs(
-          query(collection(db, "organizations"), where("uid", "==", otherUid))
-        );
-        const otherOrg = otherOrgSnap.docs[0]?.data() || {};
-        return { id: doc.id, ...data, otherOrg };
-      })
+    const q2 = query(
+      collection(db, "connections"),
+      where("to_uid", "==", user.uid),
+      where("status", "==", "accepted")
     );
-    setConnections((prev) => {
-      // Combine with existing but avoid duplicates
-      const merged = [...prev];
-      conns.forEach((c) => {
-        if (!merged.find((conn) => conn.id === c.id)) merged.push(c);
-      });
-      return merged;
-    });
-  });
 
-  return () => {
-    unsub1();
-    unsub2();
-  };
-}, [user]);
+    const unsub1 = onSnapshot(q1, async (snapshot) => {
+      const list1 = await Promise.all(
+        snapshot.docs.map(async (doc) => {
+          const data = doc.data();
+          const otherOrgSnap = await getDocs(
+            query(
+              collection(db, "organizations"),
+              where("uid", "==", data.to_uid)
+            )
+          );
+          const otherOrg = otherOrgSnap.docs[0]?.data() || {};
+          return { id: doc.id, ...data, otherOrg };
+        })
+      );
+      setConnections((prev) => [...list1]);
+    });
+
+    const unsub2 = onSnapshot(q2, async (snapshot) => {
+      const list2 = await Promise.all(
+        snapshot.docs.map(async (doc) => {
+          const data = doc.data();
+          const otherOrgSnap = await getDocs(
+            query(
+              collection(db, "organizations"),
+              where("uid", "==", data.from_uid)
+            )
+          );
+          const otherOrg = otherOrgSnap.docs[0]?.data() || {};
+          return { id: doc.id, ...data, otherOrg };
+        })
+      );
+      setConnections((prev) => {
+        const combined = [...prev];
+        list2.forEach((item) => {
+          if (!combined.find((conn) => conn.id === item.id)) {
+            combined.push(item);
+          }
+        });
+        return combined;
+      });
+    });
+
+    // Fetch pending requests
+    const pendingQuery = query(
+      collection(db, "connections"),
+      where("to_uid", "==", user.uid),
+      where("req_to", "==", "pending")
+    );
+
+    const unsubPending = onSnapshot(pendingQuery, async (snapshot) => {
+      const requests = await Promise.all(
+        snapshot.docs.map(async (doc) => {
+          const data = doc.data();
+          const orgSnap = await getDocs(
+            query(collection(db, "organizations"), where("uid", "==", data.from_uid))
+          );
+          const orgData = orgSnap.docs[0]?.data() || {};
+          return {
+            id: doc.id,
+            name: orgData.name || "Unknown",
+            code: orgData.orgId || "",
+          };
+        })
+      );
+      setPendingRequests(requests);
+    });
+
+    return () => {
+      unsub1();
+      unsub2();
+      unsubPending();
+    };
+  }, [user]);
 
 
   const handleSecretCodeSubmit = async () => {
@@ -335,7 +351,7 @@ useEffect(() => {
             key={conn.id}
             className="px-4 py-3 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer border-b dark:border-slate-700"
           >
-            <Link href={"dashboard/"+conn.id}><h4 className="text-slate-800 dark:text-white font-medium">
+            <Link href={conn.id}><h4 className="text-slate-800 dark:text-white font-medium">
               {conn.otherOrg?.name  || "Unknown"}
             </h4>
             <p className="text-sm text-slate-500 dark:text-slate-300 truncate">
