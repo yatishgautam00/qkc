@@ -355,7 +355,7 @@ export default function Sidebar() {
       <div className="flex-1 overflow-y-auto">
         {connections.map((conn) => (
           <div
-              onClick={() => router.push("dashboard/" + conn.id)}
+              onClick={() => router.push("/dashboard/" + conn.id)}
             key={conn.id}
             className="px-4 py-3 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer border-b dark:border-slate-700"
           >
