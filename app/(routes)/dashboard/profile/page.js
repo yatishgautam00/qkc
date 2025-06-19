@@ -31,25 +31,38 @@ export default function ProfilePage() {
   }
 
   return (
-    
     <div className="max-w-xl mx-auto mt-10 p-6 bg-white dark:bg-slate-900 rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-6 text-slate-800 dark:text-white">Your Profile</h2>
+      <h2 className="text-2xl font-bold mb-6 text-slate-800 dark:text-white">
+        Your Profile
+      </h2>
       <div className="space-y-4">
         <div>
           <p className="text-sm text-gray-500 dark:text-gray-400">Name</p>
-          <p className="text-lg text-slate-700 dark:text-white">{orgData.name}</p>
+          <p className="text-lg text-slate-700 dark:text-white">
+            {orgData.name}
+          </p>
         </div>
         <div>
           <p className="text-sm text-gray-500 dark:text-gray-400">Email</p>
-          <p className="text-lg text-slate-700 dark:text-white">{orgData.email}</p>
+          <p className="text-lg text-slate-700 dark:text-white">
+            {orgData.email}
+          </p>
         </div>
         <div>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Registration</p>
-          <p className="text-lg text-slate-700 dark:text-white">{orgData.registration}</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Registration
+          </p>
+          <p className="text-lg text-slate-700 dark:text-white">
+            {orgData.registrationNumber}
+          </p>
         </div>
         <div>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Secret Code</p>
-          <p className="text-lg text-slate-700 dark:text-white">{orgData.secret_code}</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Secret Code
+          </p>
+          <p className="text-lg text-slate-700 dark:text-white">
+            {orgData.orgId}
+          </p>
         </div>
       </div>
     </div>
